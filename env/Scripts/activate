@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\Harsh\OneDrive\Desktop\New folder (3)\env"
+VIRTUAL_ENV="D:\e drive\github\IOT PROJECT ML\env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
