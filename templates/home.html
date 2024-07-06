@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Table with Button</title>
+    <style>
+        .xyz{
+            padding: 4px;
+
+            border-radius: 8px;
+            background: #000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="text"] {
+            width: calc(100% - 10px);
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .submit-btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .result-container p {
+            margin: 0;
+            font-size: 18px;
+        }
+
+
+
+
+        .btn {
+            margin-left: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        .btn-outline-secondary {
+            border-radius: 0 5px 5px 0;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+    <script>
+
+        function submitForm() {
+            $.ajax({
+                url: "{% url 'submit_data_ajax' %}",
+                type: "POST",
+                data: {
+                    input1: $("#nova").val()
+                },
+                success: function(response) {
+                // console.log(".................");
+                console.log("AJAX request successful. Response:", response);
+                // console.log(data.x);
+
+                $.each(response.data, function(index, data) {
+                console.log(data.x);
+                $("#table-body").hide();
+                $("#response").empty();
+                for (let i = 0; i < response.data.length; i++) {
+                let data = response.data[i];
+                let row = '<tr>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + data.x + '</td>' +
+                    '<td>' + data.y + '</td>' +
+                    '<td>' + data.date + '</td>' +
+                    '</tr>';
+                $('#response').append(row);}
+                });
+            },
+        });
+    }
+    </script>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container mt-5">
+
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Bootstrap Table with Button</h2>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text"  id="nova" class="form-control" placeholder="Search... X value">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit" onclick="submitForm()">Search</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 text-right">
+                <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addModal">Add New</a>
+            </div>
+        </div>
+
+
+
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>x Value</th>
+                    <th>y Value</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                {% for data in datas %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{data.x}}</td>
+                    <td>{{data.y}}</td>
+                    <td>{{data.date}}</td>
+                    <td>
+                        <div class="row">
+                            <form action="{% url 'delete_data' data.pk %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+
+                            <a href="#" class="btn btn-success btn-sm" data-toggle="modal"
+                                data-target="#editmodel{{ data.pk }}">Edit</a>
+
+                        </div>
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+
+                </tbody>
+            <tbody id="response"></tbody>
+        </table>
+
+
+        <!-- Placeholder for Ajax response -->
+
+
+
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="container mt-1"></div>
+
+            <h2>Prediction Model</h2>
+            <form action="{% url 'prediction_data' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {% if xsegment and ysegment %}
+                    <div class="result-container">
+                        <p>When x = <strong>{{ xsegment }}</strong>, the predicted y value is: <strong>{{ ysegment}}</strong></p>
+                    </div>
+                    {% endif %}
+                    <div class="row xyz">
+                        <div class="col-md-6">
+                                <input type="text" id="input1" name="input1" placeholder="Input x data for Predicted Value of Y">
+                        </div>
+                        <div class="col-md-6">
+                                <button type="submit" class="submit-btn">Get Predicted Value</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+    </div>
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add New Data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form to add new data -->
+                    <form method="post" action="{% url 'add_data' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="inputX">X Value:</label>
+                            <input type="text" class="form-control" id="inputX" name="x" placeholder="Enter X value"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputY">Y Value:</label>
+                            <input type="text" class="form-control" id="inputY" name="y" placeholder="Enter Y value"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_date">Date (YYYY-MM-DD HH:MM:SS):</label>
+                            <input type="datetime-local" class="form-control" id="id_date" name="date" required>
+                        </div>
+
+
+                        <button type="submit" class="btn btn-primary">ADD</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% for data in datas %}
+    <!-- Modal -->
+    <div class="modal fade" id="editmodel{{ data.pk }}" tabindex="-1" aria-labelledby="editmodel{{ data.pk }}Label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel{{ data.pk }}">Edit Data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form to edit data -->
+                    <form method="post" action="{% url 'edit_data' data.pk %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="inputX{{ data.pk }}">X Value:</label>
+                            <input type="text" class="form-control" id="inputX{{ data.pk }}" name="x"
+                                value="{{ data.x }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputY{{ data.pk }}">Y Value:</label>
+                            <input type="text" class="form-control" id="inputY{{ data.pk }}" name="y"
+                                value="{{ data.y }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
