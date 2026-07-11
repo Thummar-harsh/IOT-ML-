@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*$py.class
+env/
+venv/
+staticfiles/
+.pytest_cache/
+db.sqlite3
+/home/jules/verification/
